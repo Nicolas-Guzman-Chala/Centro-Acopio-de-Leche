@@ -1,5 +1,5 @@
 
-defmodule calculos do
+defmodule Calculos do
 
   # Función pública que permite solicitar el cálculo de la liquidación
   # de un productor desde otro módulo, por ejemplo, desde el main.
@@ -166,7 +166,6 @@ defmodule calculos do
     # y las bonificaciones, y restando el descuento de transporte.
     liquidacion = valor_total + bonos - descuento
 
-
     # Se devuelve un mapa con el resumen de la liquidación.
     %{
       productor: productor,
@@ -178,4 +177,3 @@ defmodule calculos do
   end
 
 end
-

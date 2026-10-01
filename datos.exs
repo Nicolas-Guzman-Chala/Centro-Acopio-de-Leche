@@ -1,3 +1,5 @@
+defmodule Datos do
+
 def productores do
   [
     %{codigo: "P01", nombre: "Marta Gómez", transporte: true},
@@ -24,6 +26,7 @@ end
 
 def entregas do
   [
+    %{productor: "P03", tanque: "T1", dia: 0, litros: 300, grasa: 3.5},
     # DÍA 1
 
     %{productor: "P01", tanque: "T1", dia: 1, litros: 240, grasa: 3.8},
@@ -40,6 +43,8 @@ def entregas do
     %{productor: "P06", tanque: "T2", dia: 1, litros: 100, grasa: 2.8},
     %{productor: "P07", tanque: "T1", dia: 1, litros: 450, grasa: 4.1},
     %{productor: "P07", tanque: "T3", dia: 1, litros: 200, grasa: 3.6},
+    %{productor: "P99", tanque: "T1", dia: 1, litros: 300, grasa: 3.5},
+    %{productor: "P01", tanque: "T99", dia: 1, litros: 300, grasa: 3.5},
 
     # DÍA 2
 
@@ -57,6 +62,8 @@ def entregas do
     %{productor: "P03", tanque: "T1", dia: 2, litros: 190, grasa: 3.5},
     %{productor: "P04", tanque: "T4", dia: 2, litros: 330, grasa: 3.1},
     %{productor: "P04", tanque: "T2", dia: 2, litros: 190, grasa: 2.6},
+    %{productor: "P88", tanque: "T2", dia: 2, litros: 400, grasa: 3.8},
+    %{productor: "P02", tanque: "T88", dia: 2, litros: 400, grasa: 3.8},
 
     # DÍA 3
 
@@ -74,6 +81,7 @@ def entregas do
     %{productor: "P10", tanque: "T1", dia: 3, litros: 220, grasa: 3.6},
     %{productor: "P01", tanque: "T4", dia: 3, litros: 410, grasa: 4.0},
     %{productor: "P01", tanque: "T2", dia: 3, litros: 130, grasa: 2.7},
+    %{productor: "P05", tanque: "T3", dia: 3, litros: 0, grasa: 3.5},
 
     # =========================
     # DÍA 4
@@ -93,6 +101,7 @@ def entregas do
     %{productor: "P07", tanque: "T4", dia: 4, litros: 180, grasa: 3.2},
     %{productor: "P08", tanque: "T1", dia: 4, litros: 350, grasa: 3.7},
     %{productor: "P08", tanque: "T3", dia: 4, litros: 200, grasa: 2.8},
+    %{productor: "P06", tanque: "T4", dia: 4, litros: 801, grasa: 3.8},
 
     # DÍA 5
 
@@ -110,6 +119,7 @@ def entregas do
     %{productor: "P04", tanque: "T1", dia: 5, litros: 190, grasa: 2.6},
     %{productor: "P05", tanque: "T2", dia: 5, litros: 410, grasa: 3.8},
     %{productor: "P05", tanque: "T4", dia: 5, litros: 220, grasa: 3.1},
+    %{productor: "P07", tanque: "T1", dia: 5, litros: 300, grasa: -1},
 
     # DÍA 6
 
@@ -126,6 +136,9 @@ def entregas do
     %{productor: "P01", tanque: "T4", dia: 6, litros: 460, grasa: 4.0},
     %{productor: "P01", tanque: "T2", dia: 6, litros: 190, grasa: 3.3},
     %{productor: "P02", tanque: "T3", dia: 6, litros: 350, grasa: 3.1},
-    %{productor: "P02", tanque: "T1", dia: 6, litros: 230, grasa: 2.7}
+    %{productor: "P02", tanque: "T1", dia: 6, litros: 230, grasa: 2.7},
+    %{productor: "P08", tanque: "T2", dia: 6, litros: 400, grasa: 15.1},
+    %{productor: "P04", tanque: "T2", dia: 7, litros: 400, grasa: 3.8}
   ]
+end
 end
