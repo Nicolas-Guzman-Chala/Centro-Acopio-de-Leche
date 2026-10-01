@@ -33,13 +33,10 @@ CentroAcopio/
 │
 ├── main.exs
 ├── validaciones.exs
-├── centro_acopio.exs
+├── reportes.exs
 ├── datos.exs
 ├── calculos.exs
-├── ranking.exs
 ├── README.md
-│
-└── test/
 ```
 
 El archivo principal se encarga de ejecutar el programa y utilizar las funciones de los diferentes módulos.
