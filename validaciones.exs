@@ -13,19 +13,26 @@ defmodule Validaciones do
 
   @rango_dias 1..6
   @rango_litros 1..800
-  @porcentaje_grasa 0..15
 
-  @doc """
-  Valida una entrega completa.
+  # Valida una entrega completa.
 
-  Primero convierte los datos de la entrega y despues realiza las
-  validaciones del productor, tanque, dia, litros y porcentaje de grasa.
+  # Primero convierte los datos de la entrega y despues realiza las
+  # validaciones del productor, tanque, dia, litros y porcentaje de grasa.
 
-  Si todas las validaciones son correctas devuelve `{:ok, entrega}`.
-  Si alguna validacion falla, devuelve el error correspondiente.
-  """
+  # Si todas las validaciones son correctas devuelve `{:ok, entrega}`.
+  # Si alguna validacion falla, devuelve el error correspondiente.
+
   def validar_entrega(productores, tanques, entrega) do
-    with {:ok, entrega} <- parsear_entrega(entrega),
+    resultado =
+      if is_integer(entrega.dia) &&
+         is_integer(entrega.litros) &&
+         (is_float(entrega.grasa) || is_integer(entrega.grasa)) do
+          {:ok, entrega}
+      else
+        parsear_entrega(entrega)
+      end
+
+    with {:ok, entrega} <- resultado,
          {:ok, entrega} <- validar_productor(entrega, productores),
          {:ok, entrega} <- validar_tanque(entrega, tanques),
          {:ok, entrega} <- validar_dia(entrega),
@@ -35,16 +42,15 @@ defmodule Validaciones do
     end
   end
 
-  @doc """
-  Convierte los valores de dia, litros y grasa de una entrega a numeros
-  enteros.
+  # Convierte los valores de dia, litros y grasa de una entrega a numeros
+  # enteros.
 
-  Si los valores se pueden convertir correctamente, devuelve la entrega
-  con los datos convertidos.
+  # Si los valores se pueden convertir correctamente, devuelve la entrega
+  # con los datos convertidos.
 
-  Si alguno de los valores no se puede convertir, devuelve
-  `{:error, :parse_error}`.
-  """
+  # Si alguno de los valores no se puede convertir, devuelve
+  # `{:error, :parse_error}`.
+
   defp parsear_entrega(entrega) do
     with {entrega_dia, _} <- Integer.parse(entrega.dia),
          {entrega_litros, _} <- Integer.parse(entrega.litros),
@@ -62,18 +68,17 @@ defmodule Validaciones do
     end
   end
 
-  @doc """
-  Comprueba si el productor de la entrega existe en la lista de
-  productores.
+  # Comprueba si el productor de la entrega existe en la lista de
+  # productores.
 
-  Si el productor existe, devuelve `{:ok, entrega}`.
-  Si no existe, devuelve `{:error, :productor_desconocido}`.
-  """
+  # Si el productor existe, devuelve `{:ok, entrega}`.
+  # Si no existe, devuelve `{:error, :productor_desconocido}`.
+
   defp validar_productor(entrega, productores) do
     productor_codigo = entrega.productor
 
     encontro_productor? =
-      Enum.any(productores, fn productor ->
+      Enum.any?(productores, fn productor ->
         productor_codigo === productor.codigo
       end)
 
@@ -84,17 +89,17 @@ defmodule Validaciones do
     end
   end
 
-  @doc """
-  Comprueba si el tanque de la entrega existe en la lista de tanques.
 
-  Si el tanque existe, devuelve `{:ok, entrega}`.
-  Si no existe, devuelve `{:error, :tanque_desconocido}`.
-  """
+  # Comprueba si el tanque de la entrega existe en la lista de tanques.
+
+  # Si el tanque existe, devuelve `{:ok, entrega}`.
+  # Si no existe, devuelve `{:error, :tanque_desconocido}`.
+
   defp validar_tanque(entrega, tanques) do
     tanque_id = entrega.tanque
 
     encontro_tanque? =
-      Enum.any(tanques, fn tanque ->
+      Enum.any?(tanques, fn tanque ->
         tanque_id === tanque.id
       end)
 
@@ -105,14 +110,14 @@ defmodule Validaciones do
     end
   end
 
-  @doc """
-  Valida que el dia de la entrega este dentro del rango permitido.
 
-  El rango permitido es del dia 1 al dia 6.
+  # Valida que el dia de la entrega este dentro del rango permitido.
 
-  Si el dia es valido, devuelve `{:ok, entrega}`.
-  Si esta fuera del rango, devuelve `{:error, :dia_invalido}`.
-  """
+  # El rango permitido es del dia 1 al dia 6.
+
+  # Si el dia es valido, devuelve `{:ok, entrega}`.
+  # Si esta fuera del rango, devuelve `{:error, :dia_invalido}`.
+
   defp validar_dia(entrega) do
     entrega_dia = entrega.dia
 
@@ -123,15 +128,15 @@ defmodule Validaciones do
     end
   end
 
-  @doc """
-  Valida que la cantidad de litros de la entrega este dentro del rango
-  permitido.
 
-  El rango permitido es de 1 a 800 litros.
+  # Valida que la cantidad de litros de la entrega este dentro del rango
+  # permitido.
 
-  Si la cantidad es valida, devuelve `{:ok, entrega}`.
-  Si esta fuera del rango, devuelve `{:error, :litros_fuera_de_rango}`.
-  """
+  # El rango permitido es de 1 a 800 litros.
+
+  # Si la cantidad es valida, devuelve `{:ok, entrega}`.
+  # Si esta fuera del rango, devuelve `{:error, :litros_fuera_de_rango}`.
+
   defp validar_litros(entrega) do
     entrega_litros = entrega.litros
 
@@ -142,22 +147,22 @@ defmodule Validaciones do
     end
   end
 
-  @doc """
-  Valida que el porcentaje de grasa de la entrega este dentro del rango
-  permitido.
 
-  El porcentaje permitido es de 0 a 15.
+  # Valida que el porcentaje de grasa de la entrega este dentro del rango
+  # permitido.
 
-  Si el porcentaje es valido, devuelve `{:ok, entrega}`.
-  Si esta fuera del rango, devuelve `{:error, :porcentaje_invalido}`.
-  """
+  # El porcentaje permitido es de 0 a 15.
+
+  # Si el porcentaje es valido, devuelve `{:ok, entrega}`.
+  # Si esta fuera del rango, devuelve `{:error, :porcentaje_invalido}`.
+
   defp validar_grasa(entrega) do
-    entrega_grasa = entrega.grasa
+  entrega_grasa = entrega.grasa
 
-    if entrega_grasa in @porcentaje_grasa do
-      {:ok, entrega}
-    else
-      {:error, :porcentaje_invalido}
-    end
+  if entrega_grasa >= 0 and entrega_grasa <= 15 do
+    {:ok, entrega}
+  else
+    {:error, :porcentaje_invalido}
   end
+end
 end
