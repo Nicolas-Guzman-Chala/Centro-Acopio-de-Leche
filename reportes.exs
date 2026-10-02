@@ -7,16 +7,16 @@ defmodule Reportes do
   @motivos [:productor_desconocido, :tanque_desconocido, :dia_invalido, :litros_fuera_de_rango, :porcentaje_invalido]
 
   @doc "Imprime R1 a R8 en orden con los parámetros correctos para cada función."
-  def generar(productores, tanques, entregas_validas, entregas_rechazadas, liquidaciones) do
-    reporte_1(entregas_rechazadas)
-    reporte_2(tanques, entregas_validas)
-    reporte_3(entregas_validas)
-    reporte_4(liquidaciones)
-    reporte_5(entregas_validas, productores)
-    reporte_6(productores, entregas_validas)
-    reporte_7(liquidaciones, entregas_validas)
-    reporte_8(tanques, productores, entregas_validas)
-  end
+ def generar(productores, tanques, entregas_validas, entregas_rechazadas, liquidaciones) do
+  reporte_1(entregas_rechazadas)
+  reporte_2(tanques, entregas_validas)
+  reporte_3(entregas_validas)
+  reporte_4(liquidaciones, productores, entregas_validas)
+  reporte_5(entregas_validas, productores)
+  reporte_6(productores, entregas_validas)
+  reporte_7(liquidaciones, entregas_validas)
+  reporte_8(tanques, productores, entregas_validas)
+end
 
   @doc "R1. Entregas rechazadas con su motivo y cantidad de rechazos por cada motivo."
   def reporte_1(entregas_rechazadas) do
@@ -62,6 +62,7 @@ defmodule Reportes do
 
     IO.puts("Meta cumplida todos los días: #{si_o_no(Enum.all?(dias_resumen, fn {_dia, _litros, cumple} -> cumple end))}")
     IO.puts("Meta cumplida al menos un día: #{si_o_no(Enum.any?(dias_resumen, fn {_dia, _litros, cumple} -> cumple end))}")
+    litros_diarios
   end
 
   @doc """
@@ -76,13 +77,37 @@ defmodule Reportes do
   end
 
   @doc "R4. Liquidación de todos los productores ordenada por pago neto de mayor a menor."
-  def reporte_4(liquidaciones) do
-    IO.puts(" R4. Liquidación de productores")
-    for {liq, index} <- Enum.with_index(Enum.sort_by(liquidaciones, &(&1.neto), :desc), 1) do
-      IO.puts("#{index}. #{liq.nombre} (Código: #{liq.codigo}) | Litros: #{liq.litros} | Valor: $#{decimal(liq.valor_entregas)} | Bonos: $#{decimal(liq.bonificaciones)} | Transporte: $#{decimal(liq.transporte)} | Neto: $#{decimal(liq.neto)}")
-    end
-  end
+  def reporte_4(liquidaciones, productores, entregas_validas) do
+  IO.puts(" R4. Liquidación de productores")
 
+  liquidaciones
+  |> Enum.sort_by(&(&1.liquidacion), :desc)
+  |> Enum.with_index(1)
+  |> Enum.each(fn {liq, index} ->
+    productor =
+      Enum.find(productores, fn prod ->
+        prod.codigo == liq.productor
+      end)
+
+    litros =
+      entregas_validas
+      |> Enum.filter(fn entrega ->
+        entrega.productor == liq.productor
+      end)
+      |> Enum.map(fn entrega -> entrega.litros end)
+      |> Enum.sum()
+
+    IO.puts(
+      "#{index}. #{productor.nombre} " <>
+      "(Código: #{liq.productor}) | " <>
+      "Litros: #{litros} | " <>
+      "Valor: $#{decimal(liq.valor_entregas)} | " <>
+      "Bonos: $#{decimal(liq.bonificaciones)} | " <>
+      "Descuento transporte: $#{decimal(liq.descuento)} | " <>
+      "Neto: $#{decimal(liq.liquidacion)}"
+    )
+  end)
+end
   @doc "R5. Productor con mayor cantidad de litros entregados cada día."
 def reporte_5(entregas_validas, productores) do
   IO.puts("R5. Mayor productor por día")
@@ -148,15 +173,25 @@ end
 
   @doc "R7. Total pagado por el centro en la semana y costo promedio por litro recibido."
   def reporte_7(liquidaciones, entregas_validas) do
-    IO.puts("R7. Totales de la semana")
-    total_pagado = Enum.sum(for liq <- liquidaciones, do: liq.neto)
-    total_litros = Enum.sum(for e <- entregas_validas, do: e.litros)
-    costo_promedio = if total_litros > 0, do: total_pagado / total_litros, else: 0.0
+  IO.puts("R7. Totales de la semana")
 
-    IO.puts("Total pagado por el centro: $#{decimal(total_pagado)}")
-    IO.puts("Total de litros recibidos: #{total_litros} litros")
-    IO.puts("Costo promedio por litro: $#{decimal(costo_promedio)}")
-  end
+  total_pagado =
+    Enum.sum(for liq <- liquidaciones, do: liq.liquidacion)
+
+  total_litros =
+    Enum.sum(for e <- entregas_validas, do: e.litros)
+
+  costo_promedio =
+    if total_litros > 0 do
+      total_pagado / total_litros
+    else
+      0.0
+    end
+
+  IO.puts("Total pagado por el centro: $#{decimal(total_pagado)}")
+  IO.puts("Total de litros recibidos: #{total_litros} litros")
+  IO.puts("Costo promedio por litro: $#{decimal(costo_promedio)}")
+end
 
   @doc "R8. Productores que entregaron leche en todos los tanques del centro."
   def reporte_8(tanques, productores, entregas_validas) do
